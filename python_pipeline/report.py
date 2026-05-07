@@ -8,3 +8,9 @@ def print_signals(signals):
             f'{signal["date"]} {signal["direction"]} {signal["pattern"]} '
             f'next-day return {signal["next_day_return"] * 100:.2f}%'
         )
+
+def print_performance(perf):
+    print("\n--- Strategy Performance ---")
+    print(f'Total trades: {perf["total_trades"]}')
+    print(f'Average return: {perf["avg_return"] * 100:.2f}%')
+    print(f'Win rate: {perf["win_rate"] * 100:.2f}%')
