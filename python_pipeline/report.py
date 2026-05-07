@@ -4,5 +4,7 @@ def print_signals(signals):
         return
 
     for signal in signals:
-        
-        print(f'{signal["date"]} {signal["signal"]} {signal["pattern"]} at close {signal["close"]}')
+        print(
+            f'{signal["date"]} {signal["direction"]} {signal["pattern"]} '
+            f'next-day return {signal["next_day_return"] * 100:.2f}%'
+        )
