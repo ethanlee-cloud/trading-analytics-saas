@@ -4,4 +4,5 @@ def print_signals(signals):
         return
 
     for signal in signals:
-        print(f'{signal["date"]} {signal["signal"]} at close {signal["close"]}')
+        
+        print(f'{signal["date"]} {signal["signal"]} {signal["pattern"]} at close {signal["close"]}')
