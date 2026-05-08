@@ -1,8 +1,8 @@
 from data_loader import load_prices
 from signals import find_reversal_signals
-from report import print_signals, print_performance
+from report import print_signals, print_performance, print_performance_by_direction
 from performance import calculate_performance
-from database import connect_db, create_tables, save_signals, get_signals
+from database import connect_db,save_signals, get_signals, get_performance_by_direction
 
 
 def main():
@@ -18,9 +18,11 @@ def main():
     print_performance(perf)
 
     conn = connect_db()
-    create_tables(conn)
+    
     save_signals(conn, signals, symbol)
-
+    by_direction = get_performance_by_direction(conn, symbol)
+    print_performance_by_direction(by_direction)
+    
     print("\n--- Query: Bullish Signals ---")
     queried = get_signals(conn, symbol="SPY", direction="bullish")
     print_signals(queried)

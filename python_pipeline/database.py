@@ -5,27 +5,13 @@ def connect_db(db_path="data/trading.db"):
     return sqlite3.connect(db_path)
 
 
-def create_tables(conn):
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS signals (
-            id INTEGER PRIMARY KEY,
-            symbol TEXT NOT NULL,
-            date TEXT NOT NULL,
-            signal TEXT NOT NULL,
-            direction TEXT NOT NULL,
-            pattern TEXT NOT NULL,
-            close REAL NOT NULL,
-            next_day_return REAL NOT NULL
-        )
-    """)
-
-    conn.commit()
 
 
 def save_signals(conn, signals, symbol):
     cursor = conn.cursor()
+
+    # Delete existing signals for this symbol to avoid duplicates
+    cursor.execute("DELETE FROM signals WHERE symbol = ?", (symbol,))
 
     for signal in signals:
         cursor.execute("""
@@ -81,3 +67,31 @@ def get_signals(conn, symbol=None, direction=None):
         })
 
     return signals
+
+
+def get_performance_by_direction(conn, symbol):
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            direction,
+            COUNT(*) AS total_trades,
+            AVG(next_day_return) AS avg_return,
+            AVG(CASE WHEN next_day_return > 0 THEN 1.0 ELSE 0.0 END) AS win_rate
+        FROM signals
+        WHERE symbol = ?
+        GROUP BY direction
+    """, (symbol,))
+
+    rows = cursor.fetchall()
+
+    results = []
+    for row in rows:
+        results.append({
+            "direction": row[0],
+            "total_trades": row[1],
+            "avg_return": row[2],
+            "win_rate": row[3],
+        })
+
+    return results
